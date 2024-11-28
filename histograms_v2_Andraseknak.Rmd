@@ -1,0 +1,595 @@
+---
+title: "Histograms"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+date: "2023-04-18"
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls()) # tiszta lappal kezdek
+
+library(tidyverse)
+library(srvyr)
+library(haven)
+
+
+load("C:/Panni/POVERTY/2022_TR/data/H.Rdata")
+setwd("C:/Panni/POVERTY/2023_UnicefTEMP")
+
+
+# változók átnevezése
+s <- H %>% rename(hid = RX030,
+                  pid = RB030,
+                  y = HB010,
+                  weight=RB050,
+                  szulev=RB080,
+                  sex=RB090,
+                  age=RX020)
+
+#kidobom a két esetet ahol y=NA
+s <- subset(s,is.na(y)==F)
+
+
+# évenkénti adatbázisok
+s2005 <- subset(s,y==2005)
+s2006 <- subset(s,y==2006)
+s2007 <- subset(s,y==2007)
+s2008 <- subset(s,y==2008)
+s2009 <- subset(s,y==2009)
+s2010 <- subset(s,y==2010)
+s2011 <- subset(s,y==2011)
+s2012 <- subset(s,y==2012)
+s2013 <- subset(s,y==2013)
+s2014 <- subset(s,y==2014)
+s2015 <- subset(s,y==2015)
+s2016 <- subset(s,y==2016)
+s2017 <- subset(s,y==2017)
+s2018 <- subset(s,y==2018)
+s2019 <- subset(s,y==2019)
+s2020 <- subset(s,y==2020)
+
+
+silcweight_srvyrH <- as_survey_design(.data=s,weights=weight)
+
+# mediánokat kiírom egy file-ba
+medianok <- silcweight_srvyrH  %>%group_by(y) %>% summarize(HX090median = survey_median(HX090,na.rm=T,vartype=NULL))
+
+
+#határok
+medianok$AROP40tresh <- medianok$HX090median *0.4
+medianok$AROP50tresh <- medianok$HX090median *0.5
+medianok$AROP60tresh <- medianok$HX090median *0.6
+medianok$AROP70tresh <- medianok$HX090median *0.7
+
+```
+
+## Distribution of HY020 by year with fixed 100 euro bins
+
+```{r }
+hist(s2005$HY020,
+    breaks=seq(round(min(s2005$HY020,na.rm=T)/100-1)*100,round(max(s2005$HY020,na.rm=T)/100+1)*100,100),
+    xlim=c(0,quantile(s2005$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2005],col="blue")
+hist(s2006$HY020,
+     breaks=seq(round(min(s2006$HY020,na.rm=T)/100-1)*100,round(max(s2006$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2006$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2006],col="blue")
+hist(s2007$HY020,
+     breaks=seq(round(min(s2007$HY020,na.rm=T)/100-1)*100,round(max(s2007$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2007$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2007],col="blue")
+hist(s2008$HY020,
+     breaks=seq(round(min(s2008$HY020,na.rm=T)/100-1)*100,round(max(s2008$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2008$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2008],col="blue")
+hist(s2009$HY020,
+     breaks=seq(round(min(s2009$HY020,na.rm=T)/100-1)*100,round(max(s2009$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2009$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2009],col="blue")
+hist(s2010$HY020,
+     breaks=seq(round(min(s2010$HY020,na.rm=T)/100-1)*100,round(max(s2010$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2010$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2010],col="blue")
+hist(s2011$HY020,
+     breaks=seq(round(min(s2011$HY020,na.rm=T)/100-1)*100,round(max(s2011$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2011$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2011],col="blue")
+hist(s2012$HY020,
+     breaks=seq(round(min(s2012$HY020,na.rm=T)/100-1)*100,round(max(s2012$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2012$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2012],col="blue")
+hist(s2013$HY020,
+     breaks=seq(round(min(s2013$HY020,na.rm=T)/100-1)*100,round(max(s2013$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2013$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2013],col="blue")
+hist(s2014$HY020,
+     breaks=seq(round(min(s2014$HY020,na.rm=T)/100-1)*100,round(max(s2014$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2014$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2014],col="blue")
+hist(s2015$HY020,
+     breaks=seq(round(min(s2015$HY020,na.rm=T)/100-1)*100,round(max(s2015$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2015$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2015],col="blue")
+hist(s2016$HY020,
+     breaks=seq(round(min(s2016$HY020,na.rm=T)/100-1)*100,round(max(s2016$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2016$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2016],col="blue")
+hist(s2017$HY020,
+     breaks=seq(round(min(s2017$HY020,na.rm=T)/100-1)*100,round(max(s2017$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2017$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2017],col="blue")
+hist(s2018$HY020,
+     breaks=seq(round(min(s2018$HY020,na.rm=T)/100-1)*100,round(max(s2018$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2018$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2018],col="blue")
+hist(s2019$HY020,
+     breaks=seq(round(min(s2019$HY020,na.rm=T)/100-1)*100,round(max(s2019$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2019$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2019],col="blue")
+hist(s2020$HY020,
+     breaks=seq(round(min(s2020$HY020,na.rm=T)/100-1)*100,round(max(s2020$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2020$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2020],col="blue")
+```
+
+## Distribution of HX090 by year
+
+```{r }
+hist(s2005$HX090,
+    breaks=seq(round(min(s2005$HX090,na.rm=T)/100-1)*100,round(max(s2005$HX090,na.rm=T)/100+1)*100,100),
+    xlim=c(0,quantile(s2005$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2005],col="blue")
+hist(s2006$HX090,
+     breaks=seq(round(min(s2006$HX090,na.rm=T)/100-1)*100,round(max(s2006$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2006$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2006],col="blue")
+hist(s2007$HX090,
+     breaks=seq(round(min(s2007$HX090,na.rm=T)/100-1)*100,round(max(s2007$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2007$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2007],col="blue")
+hist(s2008$HX090,
+     breaks=seq(round(min(s2008$HX090,na.rm=T)/100-1)*100,round(max(s2008$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2008$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2008],col="blue")
+hist(s2009$HX090,
+     breaks=seq(round(min(s2009$HX090,na.rm=T)/100-1)*100,round(max(s2009$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2009$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2009],col="blue")
+hist(s2010$HX090,
+     breaks=seq(round(min(s2010$HX090,na.rm=T)/100-1)*100,round(max(s2010$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2010$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2010],col="blue")
+hist(s2011$HX090,
+     breaks=seq(round(min(s2011$HX090,na.rm=T)/100-1)*100,round(max(s2011$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2011$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2011],col="blue")
+hist(s2012$HX090,
+     breaks=seq(round(min(s2012$HX090,na.rm=T)/100-1)*100,round(max(s2012$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2012$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2012],col="blue")
+hist(s2013$HX090,
+     breaks=seq(round(min(s2013$HX090,na.rm=T)/100-1)*100,round(max(s2013$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2013$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2013],col="blue")
+hist(s2014$HX090,
+     breaks=seq(round(min(s2014$HX090,na.rm=T)/100-1)*100,round(max(s2014$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2014$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2014],col="blue")
+hist(s2015$HX090,
+     breaks=seq(round(min(s2015$HX090,na.rm=T)/100-1)*100,round(max(s2015$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2015$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2015],col="blue")
+hist(s2016$HX090,
+     breaks=seq(round(min(s2016$HX090,na.rm=T)/100-1)*100,round(max(s2016$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2016$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2016],col="blue")
+hist(s2017$HX090,
+     breaks=seq(round(min(s2017$HX090,na.rm=T)/100-1)*100,round(max(s2017$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2017$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2017],col="blue")
+hist(s2018$HX090,
+     breaks=seq(round(min(s2018$HX090,na.rm=T)/100-1)*100,round(max(s2018$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2018$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2018],col="blue")
+hist(s2019$HX090,
+     breaks=seq(round(min(s2019$HX090,na.rm=T)/100-1)*100,round(max(s2019$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2019$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2019],col="blue")
+hist(s2020$HX090,
+     breaks=seq(round(min(s2020$HX090,na.rm=T)/100-1)*100,round(max(s2020$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2020$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2020],col="blue")
+```
+
+## One person households 
+
+```{r}
+s2005 <- subset(s,y==2005 & HX060 == 5)
+s2006 <- subset(s,y==2006 & HX060 == 5)
+s2007 <- subset(s,y==2007 & HX060 == 5)
+s2008 <- subset(s,y==2008 & HX060 == 5)
+s2009 <- subset(s,y==2009 & HX060 == 5)
+s2010 <- subset(s,y==2010 & HX060 == 5)
+s2011 <- subset(s,y==2011 & HX060 == 5)
+s2012 <- subset(s,y==2012 & HX060 == 5)
+s2013 <- subset(s,y==2013 & HX060 == 5)
+s2014 <- subset(s,y==2014 & HX060 == 5)
+s2015 <- subset(s,y==2015 & HX060 == 5)
+s2016 <- subset(s,y==2016 & HX060 == 5)
+s2017 <- subset(s,y==2017 & HX060 == 5)
+s2018 <- subset(s,y==2018 & HX060 == 5)
+s2019 <- subset(s,y==2019 & HX060 == 5)
+s2020 <- subset(s,y==2020 & HX060 == 5)
+
+hist(s2005$HY020,
+    breaks=seq(round(min(s2005$HY020,na.rm=T)/100-1)*100,round(max(s2005$HY020,na.rm=T)/100+1)*100,100),
+    xlim=c(0,quantile(s2005$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2005],col="blue")
+hist(s2006$HY020,
+     breaks=seq(round(min(s2006$HY020,na.rm=T)/100-1)*100,round(max(s2006$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2006$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2006],col="blue")
+hist(s2007$HY020,
+     breaks=seq(round(min(s2007$HY020,na.rm=T)/100-1)*100,round(max(s2007$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2007$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2007],col="blue")
+hist(s2008$HY020,
+     breaks=seq(round(min(s2008$HY020,na.rm=T)/100-1)*100,round(max(s2008$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2008$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2008],col="blue")
+hist(s2009$HY020,
+     breaks=seq(round(min(s2009$HY020,na.rm=T)/100-1)*100,round(max(s2009$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2009$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2009],col="blue")
+hist(s2010$HY020,
+     breaks=seq(round(min(s2010$HY020,na.rm=T)/100-1)*100,round(max(s2010$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2010$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2010],col="blue")
+hist(s2011$HY020,
+     breaks=seq(round(min(s2011$HY020,na.rm=T)/100-1)*100,round(max(s2011$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2011$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2011],col="blue")
+hist(s2012$HY020,
+     breaks=seq(round(min(s2012$HY020,na.rm=T)/100-1)*100,round(max(s2012$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2012$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2012],col="blue")
+hist(s2013$HY020,
+     breaks=seq(round(min(s2013$HY020,na.rm=T)/100-1)*100,round(max(s2013$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2013$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2013],col="blue")
+hist(s2014$HY020,
+     breaks=seq(round(min(s2014$HY020,na.rm=T)/100-1)*100,round(max(s2014$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2014$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2014],col="blue")
+hist(s2015$HY020,
+     breaks=seq(round(min(s2015$HY020,na.rm=T)/100-1)*100,round(max(s2015$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2015$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2015],col="blue")
+hist(s2016$HY020,
+     breaks=seq(round(min(s2016$HY020,na.rm=T)/100-1)*100,round(max(s2016$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2016$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2016],col="blue")
+hist(s2017$HY020,
+     breaks=seq(round(min(s2017$HY020,na.rm=T)/100-1)*100,round(max(s2017$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2017$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2017],col="blue")
+hist(s2018$HY020,
+     breaks=seq(round(min(s2018$HY020,na.rm=T)/100-1)*100,round(max(s2018$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2018$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2018],col="blue")
+hist(s2019$HY020,
+     breaks=seq(round(min(s2019$HY020,na.rm=T)/100-1)*100,round(max(s2019$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2019$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2019],col="blue")
+hist(s2020$HY020,
+     breaks=seq(round(min(s2020$HY020,na.rm=T)/100-1)*100,round(max(s2020$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2020$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2020],col="blue")
+```
+
+## Households with children
+
+```{r}
+s2005 <- subset(s,y==2005 & HX060 %in% c(9,10,11,12,13))
+s2006 <- subset(s,y==2006 & HX060 %in% c(9,10,11,12,13))
+s2007 <- subset(s,y==2007 & HX060 %in% c(9,10,11,12,13))
+s2008 <- subset(s,y==2008 & HX060 %in% c(9,10,11,12,13))
+s2009 <- subset(s,y==2009 & HX060 %in% c(9,10,11,12,13))
+s2010 <- subset(s,y==2010 & HX060 %in% c(9,10,11,12,13))
+s2011 <- subset(s,y==2011 & HX060 %in% c(9,10,11,12,13))
+s2012 <- subset(s,y==2012 & HX060 %in% c(9,10,11,12,13))
+s2013 <- subset(s,y==2013 & HX060 %in% c(9,10,11,12,13))
+s2014 <- subset(s,y==2014 & HX060 %in% c(9,10,11,12,13))
+s2015 <- subset(s,y==2015 & HX060 %in% c(9,10,11,12,13))
+s2016 <- subset(s,y==2016 & HX060 %in% c(9,10,11,12,13))
+s2017 <- subset(s,y==2017 & HX060 %in% c(9,10,11,12,13))
+s2018 <- subset(s,y==2018 & HX060 %in% c(9,10,11,12,13))
+s2019 <- subset(s,y==2019 & HX060 %in% c(9,10,11,12,13))
+s2020 <- subset(s,y==2020 & HX060 %in% c(9,10,11,12,13))
+
+hist(s2005$HY020,
+    breaks=seq(round(min(s2005$HY020,na.rm=T)/100-1)*100,round(max(s2005$HY020,na.rm=T)/100+1)*100,100),
+    xlim=c(0,quantile(s2005$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2005],col="blue")
+hist(s2006$HY020,
+     breaks=seq(round(min(s2006$HY020,na.rm=T)/100-1)*100,round(max(s2006$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2006$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2006],col="blue")
+hist(s2007$HY020,
+     breaks=seq(round(min(s2007$HY020,na.rm=T)/100-1)*100,round(max(s2007$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2007$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2007],col="blue")
+hist(s2008$HY020,
+     breaks=seq(round(min(s2008$HY020,na.rm=T)/100-1)*100,round(max(s2008$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2008$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2008],col="blue")
+hist(s2009$HY020,
+     breaks=seq(round(min(s2009$HY020,na.rm=T)/100-1)*100,round(max(s2009$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2009$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2009],col="blue")
+hist(s2010$HY020,
+     breaks=seq(round(min(s2010$HY020,na.rm=T)/100-1)*100,round(max(s2010$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2010$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2010],col="blue")
+hist(s2011$HY020,
+     breaks=seq(round(min(s2011$HY020,na.rm=T)/100-1)*100,round(max(s2011$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2011$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2011],col="blue")
+hist(s2012$HY020,
+     breaks=seq(round(min(s2012$HY020,na.rm=T)/100-1)*100,round(max(s2012$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2012$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2012],col="blue")
+hist(s2013$HY020,
+     breaks=seq(round(min(s2013$HY020,na.rm=T)/100-1)*100,round(max(s2013$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2013$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2013],col="blue")
+hist(s2014$HY020,
+     breaks=seq(round(min(s2014$HY020,na.rm=T)/100-1)*100,round(max(s2014$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2014$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2014],col="blue")
+hist(s2015$HY020,
+     breaks=seq(round(min(s2015$HY020,na.rm=T)/100-1)*100,round(max(s2015$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2015$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2015],col="blue")
+hist(s2016$HY020,
+     breaks=seq(round(min(s2016$HY020,na.rm=T)/100-1)*100,round(max(s2016$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2016$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2016],col="blue")
+hist(s2017$HY020,
+     breaks=seq(round(min(s2017$HY020,na.rm=T)/100-1)*100,round(max(s2017$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2017$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2017],col="blue")
+hist(s2018$HY020,
+     breaks=seq(round(min(s2018$HY020,na.rm=T)/100-1)*100,round(max(s2018$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2018$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2018],col="blue")
+hist(s2019$HY020,
+     breaks=seq(round(min(s2019$HY020,na.rm=T)/100-1)*100,round(max(s2019$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2019$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2019],col="blue")
+hist(s2020$HY020,
+     breaks=seq(round(min(s2020$HY020,na.rm=T)/100-1)*100,round(max(s2020$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2020$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2020],col="blue")
+
+hist(s2005$HX090,
+    breaks=seq(round(min(s2005$HX090,na.rm=T)/100-1)*100,round(max(s2005$HX090,na.rm=T)/100+1)*100,100),
+    xlim=c(0,quantile(s2005$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2005],col="blue")
+hist(s2006$HX090,
+     breaks=seq(round(min(s2006$HX090,na.rm=T)/100-1)*100,round(max(s2006$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2006$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2006],col="blue")
+hist(s2007$HX090,
+     breaks=seq(round(min(s2007$HX090,na.rm=T)/100-1)*100,round(max(s2007$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2007$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2007],col="blue")
+hist(s2008$HX090,
+     breaks=seq(round(min(s2008$HX090,na.rm=T)/100-1)*100,round(max(s2008$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2008$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2008],col="blue")
+hist(s2009$HX090,
+     breaks=seq(round(min(s2009$HX090,na.rm=T)/100-1)*100,round(max(s2009$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2009$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2009],col="blue")
+hist(s2010$HX090,
+     breaks=seq(round(min(s2010$HX090,na.rm=T)/100-1)*100,round(max(s2010$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2010$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2010],col="blue")
+hist(s2011$HX090,
+     breaks=seq(round(min(s2011$HX090,na.rm=T)/100-1)*100,round(max(s2011$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2011$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2011],col="blue")
+hist(s2012$HX090,
+     breaks=seq(round(min(s2012$HX090,na.rm=T)/100-1)*100,round(max(s2012$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2012$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2012],col="blue")
+hist(s2013$HX090,
+     breaks=seq(round(min(s2013$HX090,na.rm=T)/100-1)*100,round(max(s2013$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2013$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2013],col="blue")
+hist(s2014$HX090,
+     breaks=seq(round(min(s2014$HX090,na.rm=T)/100-1)*100,round(max(s2014$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2014$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2014],col="blue")
+hist(s2015$HX090,
+     breaks=seq(round(min(s2015$HX090,na.rm=T)/100-1)*100,round(max(s2015$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2015$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2015],col="blue")
+hist(s2016$HX090,
+     breaks=seq(round(min(s2016$HX090,na.rm=T)/100-1)*100,round(max(s2016$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2016$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2016],col="blue")
+hist(s2017$HX090,
+     breaks=seq(round(min(s2017$HX090,na.rm=T)/100-1)*100,round(max(s2017$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2017$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2017],col="blue")
+hist(s2018$HX090,
+     breaks=seq(round(min(s2018$HX090,na.rm=T)/100-1)*100,round(max(s2018$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2018$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2018],col="blue")
+hist(s2019$HX090,
+     breaks=seq(round(min(s2019$HX090,na.rm=T)/100-1)*100,round(max(s2019$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2019$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2019],col="blue")
+hist(s2020$HX090,
+     breaks=seq(round(min(s2020$HX090,na.rm=T)/100-1)*100,round(max(s2020$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2020$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2020],col="blue")
+```
+
+##
+
+## Only children
+
+```{r}
+s2005 <- subset(s,y==2005 & age<18)
+s2006 <- subset(s,y==2006 & age<18)
+s2007 <- subset(s,y==2007 & age<18)
+s2008 <- subset(s,y==2008 & age<18)
+s2009 <- subset(s,y==2009 & age<18)
+s2010 <- subset(s,y==2010 & age<18)
+s2011 <- subset(s,y==2011 & age<18)
+s2012 <- subset(s,y==2012 & age<18)
+s2013 <- subset(s,y==2013 & age<18)
+s2014 <- subset(s,y==2014 & age<18)
+s2015 <- subset(s,y==2015 & age<18)
+s2016 <- subset(s,y==2016 & age<18)
+s2017 <- subset(s,y==2017 & age<18)
+s2018 <- subset(s,y==2018 & age<18)
+s2019 <- subset(s,y==2019 & age<18)
+s2020 <- subset(s,y==2020 & age<18)
+
+hist(s2005$HY020,
+    breaks=seq(round(min(s2005$HY020,na.rm=T)/100-1)*100,round(max(s2005$HY020,na.rm=T)/100+1)*100,100),
+    xlim=c(0,quantile(s2005$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2005],col="blue")
+hist(s2006$HY020,
+     breaks=seq(round(min(s2006$HY020,na.rm=T)/100-1)*100,round(max(s2006$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2006$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2006],col="blue")
+hist(s2007$HY020,
+     breaks=seq(round(min(s2007$HY020,na.rm=T)/100-1)*100,round(max(s2007$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2007$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2007],col="blue")
+hist(s2008$HY020,
+     breaks=seq(round(min(s2008$HY020,na.rm=T)/100-1)*100,round(max(s2008$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2008$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2008],col="blue")
+hist(s2009$HY020,
+     breaks=seq(round(min(s2009$HY020,na.rm=T)/100-1)*100,round(max(s2009$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2009$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2009],col="blue")
+hist(s2010$HY020,
+     breaks=seq(round(min(s2010$HY020,na.rm=T)/100-1)*100,round(max(s2010$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2010$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2010],col="blue")
+hist(s2011$HY020,
+     breaks=seq(round(min(s2011$HY020,na.rm=T)/100-1)*100,round(max(s2011$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2011$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2011],col="blue")
+hist(s2012$HY020,
+     breaks=seq(round(min(s2012$HY020,na.rm=T)/100-1)*100,round(max(s2012$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2012$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2012],col="blue")
+hist(s2013$HY020,
+     breaks=seq(round(min(s2013$HY020,na.rm=T)/100-1)*100,round(max(s2013$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2013$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2013],col="blue")
+hist(s2014$HY020,
+     breaks=seq(round(min(s2014$HY020,na.rm=T)/100-1)*100,round(max(s2014$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2014$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2014],col="blue")
+hist(s2015$HY020,
+     breaks=seq(round(min(s2015$HY020,na.rm=T)/100-1)*100,round(max(s2015$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2015$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2015],col="blue")
+hist(s2016$HY020,
+     breaks=seq(round(min(s2016$HY020,na.rm=T)/100-1)*100,round(max(s2016$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2016$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2016],col="blue")
+hist(s2017$HY020,
+     breaks=seq(round(min(s2017$HY020,na.rm=T)/100-1)*100,round(max(s2017$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2017$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2017],col="blue")
+hist(s2018$HY020,
+     breaks=seq(round(min(s2018$HY020,na.rm=T)/100-1)*100,round(max(s2018$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2018$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2018],col="blue")
+hist(s2019$HY020,
+     breaks=seq(round(min(s2019$HY020,na.rm=T)/100-1)*100,round(max(s2019$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2019$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2019],col="blue")
+hist(s2020$HY020,
+     breaks=seq(round(min(s2020$HY020,na.rm=T)/100-1)*100,round(max(s2020$HY020,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2020$HY020,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2020],col="blue")
+
+hist(s2005$HX090,
+    breaks=seq(round(min(s2005$HX090,na.rm=T)/100-1)*100,round(max(s2005$HX090,na.rm=T)/100+1)*100,100),
+    xlim=c(0,quantile(s2005$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2005],col="blue")
+hist(s2006$HX090,
+     breaks=seq(round(min(s2006$HX090,na.rm=T)/100-1)*100,round(max(s2006$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2006$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2006],col="blue")
+hist(s2007$HX090,
+     breaks=seq(round(min(s2007$HX090,na.rm=T)/100-1)*100,round(max(s2007$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2007$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2007],col="blue")
+hist(s2008$HX090,
+     breaks=seq(round(min(s2008$HX090,na.rm=T)/100-1)*100,round(max(s2008$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2008$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2008],col="blue")
+hist(s2009$HX090,
+     breaks=seq(round(min(s2009$HX090,na.rm=T)/100-1)*100,round(max(s2009$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2009$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2009],col="blue")
+hist(s2010$HX090,
+     breaks=seq(round(min(s2010$HX090,na.rm=T)/100-1)*100,round(max(s2010$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2010$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2010],col="blue")
+hist(s2011$HX090,
+     breaks=seq(round(min(s2011$HX090,na.rm=T)/100-1)*100,round(max(s2011$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2011$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2011],col="blue")
+hist(s2012$HX090,
+     breaks=seq(round(min(s2012$HX090,na.rm=T)/100-1)*100,round(max(s2012$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2012$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2012],col="blue")
+hist(s2013$HX090,
+     breaks=seq(round(min(s2013$HX090,na.rm=T)/100-1)*100,round(max(s2013$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2013$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2013],col="blue")
+hist(s2014$HX090,
+     breaks=seq(round(min(s2014$HX090,na.rm=T)/100-1)*100,round(max(s2014$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2014$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2014],col="blue")
+hist(s2015$HX090,
+     breaks=seq(round(min(s2015$HX090,na.rm=T)/100-1)*100,round(max(s2015$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2015$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2015],col="blue")
+hist(s2016$HX090,
+     breaks=seq(round(min(s2016$HX090,na.rm=T)/100-1)*100,round(max(s2016$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2016$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2016],col="blue")
+hist(s2017$HX090,
+     breaks=seq(round(min(s2017$HX090,na.rm=T)/100-1)*100,round(max(s2017$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2017$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2017],col="blue")
+hist(s2018$HX090,
+     breaks=seq(round(min(s2018$HX090,na.rm=T)/100-1)*100,round(max(s2018$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2018$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2018],col="blue")
+hist(s2019$HX090,
+     breaks=seq(round(min(s2019$HX090,na.rm=T)/100-1)*100,round(max(s2019$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2019$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2019],col="blue")
+hist(s2020$HX090,
+     breaks=seq(round(min(s2020$HX090,na.rm=T)/100-1)*100,round(max(s2020$HX090,na.rm=T)/100+1)*100,100),
+     xlim=c(0,quantile(s2020$HX090,probs=seq(0,1,0.10))["90%"]))
+abline(v=medianok$AROP60tresh[medianok$y==2020],col="blue")
+```
